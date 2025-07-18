@@ -1,0 +1,28 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class SeleniumTest {
+	public static void main(String[] args) throws InterruptedException {
+		//크롬 브라우저를 원격 조종하기 위한 JAVA 객체를 생성
+		//like 리모콘
+		WebDriver driver = new ChromeDriver();
+		
+		//네이버를 열어보자.
+		driver.get("https://www.naver.com");
+		
+		// 증권 HTML 요소의 CSS 선택자 ... 아래와 같음
+		// #shortcutArea > ul > li:nth-child(6) > a
+		
+		//증권 버튼을 클릭 findElement : 하나 / findElements : 여러개
+		WebElement financeBtn = driver.findElement(By.cssSelector("#shortcutArea > ul > li:nth-child(6) > a"));
+		
+		// 클릭!
+		financeBtn.click();
+		
+		//JAVA야 잠깐 쉬어가자 10초만 !
+		Thread.sleep(100000); //밀리세컨즈 기준임 
+		
+	}
+}

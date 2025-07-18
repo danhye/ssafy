@@ -1,0 +1,24 @@
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+
+public class LoginTest {
+	public static void main(String[] args) {
+		WebDriver driver = new ChromeDriver();
+		
+		//네이버 연결
+		driver.get("https://naver.com");
+		
+		WebElement loginBtn = driver.findElement(By.cssSelector("#account > div > a"));
+		loginBtn.click();
+		
+		// id 입력 창 css : #input_item_id
+		// 비밀번호 입력 창 css : #input_item_pw
+		
+		
+	}
+}

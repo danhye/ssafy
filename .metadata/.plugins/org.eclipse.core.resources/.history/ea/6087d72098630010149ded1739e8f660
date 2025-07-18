@@ -1,0 +1,13 @@
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class SeleniumTest {
+	public static void main(String[] args) {
+		//크롬 브라우저를 원격 조종하기 위한 JAVA 객체를 생성
+		//like 리모콘
+		WebDriver driver = new ChromeDriver();
+		
+		//네이버를 열어보자.
+		driver.get("https://www.naver.com");
+	}
+}

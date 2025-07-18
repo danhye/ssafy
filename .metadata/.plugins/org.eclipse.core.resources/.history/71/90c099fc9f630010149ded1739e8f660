@@ -1,0 +1,31 @@
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+
+public class LoginTest {
+	public static void main(String[] args) {
+		WebDriver driver = new ChromeDriver();
+		
+		//네이버 연결
+		driver.get("https://naver.com");
+		
+		// 현재 페이지의 핸들을 저장해두기
+		String mainPage = driver.getWindowHandle();
+		
+		// 모든 핸들취득
+		Set<String> handles = driver.getWindowHandles();
+		
+		// 네이버 로그인 버튼을 Select 객체 형태로 취득
+		//Select nLogin = new Select(driver.findElement(By.cssSelector("#account > div > a")));
+		//nLogin.selectByVisibleText("로그인");
+		
+		WebElement loginBtn = driver.findElement(By.cssSelector("#account > div > a\""));
+		loginBtn.click();
+		
+		// 네이버 화면의 로그인 버튼 #account > div > a
+	}
+}

@@ -1,0 +1,118 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class MyGPT extends JFrame {
+    private JTextArea chatArea;
+    private JTextField inputField;
+    private JButton sendButton;
+    private JSONArray messages = new JSONArray();
+
+    // OpenAI API 정보
+    private static final String API_KEY = "sk-<본인의-API-KEY>";
+    private static final String GPT_URL = "https://api.openai.com/v1/chat/completions";
+
+    public MyGPT() {
+        setTitle("💬 ChatGPT 챗봇");
+        setSize(500, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // 채팅창 영역
+        chatArea = new JTextArea();
+        chatArea.setEditable(false);
+        chatArea.setLineWrap(true);
+        JScrollPane scrollPane = new JScrollPane(chatArea);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // 입력창과 버튼
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputField = new JTextField();
+        sendButton = new JButton("전송");
+
+        inputPanel.add(inputField, BorderLayout.CENTER);
+        inputPanel.add(sendButton, BorderLayout.EAST);
+        add(inputPanel, BorderLayout.SOUTH);
+
+        // 이벤트 등록
+        sendButton.addActionListener(e -> sendMessage());
+        inputField.addActionListener(e -> sendMessage());
+
+        setVisible(true);
+    }
+
+    private void sendMessage() {
+        String userText = inputField.getText().trim();
+        if (userText.isEmpty()) return;
+
+        chatArea.append("👤 나: " + userText + "\n");
+        inputField.setText("");
+
+        JSONObject userMsg = new JSONObject();
+        userMsg.put("role", "user");
+        userMsg.put("content", userText);
+        messages.put(userMsg);
+
+        new Thread(() -> {
+            try {
+                String response = sendToGPT(messages);
+
+                JSONObject assistantMsg = new JSONObject();
+                assistantMsg.put("role", "assistant");
+                assistantMsg.put("content", response);
+                messages.put(assistantMsg);
+
+                SwingUtilities.invokeLater(() -> {
+                    chatArea.append("🤖 챗봇: " + response + "\n\n");
+                });
+            } catch (IOException e) {
+                SwingUtilities.invokeLater(() -> {
+                    chatArea.append("❌ 오류: " + e.getMessage() + "\n");
+                });
+            }
+        }).start();
+    }
+
+    private String sendToGPT(JSONArray messages) throws IOException {
+        URL url = new URL(GPT_URL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Authorization", "Bearer " + API_KEY);
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        JSONObject request = new JSONObject();
+        request.put("model", "gpt-4o-mini");
+        request.put("temperature", 0.7);
+        request.put("messages", messages);
+
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()))) {
+            bw.write(request.toString());
+        }
+
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+
+        JSONObject root = new JSONObject(sb.toString());
+        return root.getJSONArray("choices")
+                   .getJSONObject(0)
+                   .getJSONObject("message")
+                   .getString("content")
+                   .trim();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MyGPT::new);
+    }
+}

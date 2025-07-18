@@ -1,0 +1,31 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class LoginTest {
+    public static void main(String[] args) {
+        WebDriver driver = new ChromeDriver();
+
+        // 1. 네이버 접속
+        driver.get("https://www.naver.com");
+
+        // 2. 로그인 버튼 클릭
+        WebElement loginBtn = driver.findElement(By.cssSelector("#account > div > a"));
+        loginBtn.click();
+
+        // 3. 로그인 페이지는 iframe으로 되어 있음 → 전환 필요
+        driver.switchTo().frame("login_frame"); // 네이버는 iframe 이름이 login_frame
+
+        // 4. 아이디, 비밀번호 입력
+        WebElement idInput = driver.findElement(By.id("id"));
+        WebElement pwInput = driver.findElement(By.id("pw"));
+
+        idInput.sendKeys("dan0628");
+        pwInput.sendKeys("sksmsekseksdl1?");
+
+        // 5. 로그인 버튼 클릭
+        WebElement loginSubmit = driver.findElement(By.cssSelector(".btn_login"));
+        loginSubmit.click();
+    }
+}

@@ -1,0 +1,55 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class ChatGPT {
+//   private static String API_KEY = "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";
+   private static String API_KEY = "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";
+   private static String GPT_URL = "https://api.openai.com/v1/chat/completions";
+
+   public static void main(String[] args) throws IOException {
+      URL url = new URL(GPT_URL);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      
+      connection.setRequestMethod("POST");
+      connection.setRequestProperty("Content-Type", "application/json");
+      connection.setRequestProperty("Authorization", "Bearer " + API_KEY);
+      connection.setDoInput(true);
+      connection.setDoOutput(true);
+      
+      JSONObject data = new JSONObject();
+      data.put("model", "gpt-4o-mini");
+      data.put("temperature", 0.7);
+      
+      JSONObject message = new JSONObject();
+      message.put("role", "user");
+      message.put("content", "hello! how are you!");
+      
+      JSONArray messages = new JSONArray();
+      messages.put(message);
+      
+      data.put("messages", messages);
+      
+      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+      bw.write(data.toString());
+      bw.flush();
+      bw.close();
+      
+      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      StringBuilder sb = new StringBuilder();
+      String line = null;
+      
+      while ((line = br.readLine()) != null) {
+         sb.append(line);
+      }
+      
+      System.out.println(sb.toString());
+   }
+}

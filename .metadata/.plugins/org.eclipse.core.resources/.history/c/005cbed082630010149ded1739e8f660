@@ -1,0 +1,63 @@
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class MyGPT {
+    private static final String API_KEY = "sk-<여기에-본인-API-KEY>";
+    private static final String GPT_URL = "https://api.openai.com/v1/chat/completions";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        JSONArray messages = new JSONArray(); // 대화 히스토리 유지
+
+        System.out.println("💬 ChatGPT 챗봇입니다! ('exit' 입력 시 종료)");
+
+        while (true) {
+            System.out.print("👤 사용자: ");
+            String userInput = scanner.nextLine();
+
+            if (userInput.equalsIgnoreCase("exit") || userInput.equalsIgnoreCase("quit")) {
+                System.out.println("👋 챗봇 종료합니다.");
+                break;
+            }
+
+            // 사용자 메시지 추가
+            JSONObject userMessage = new JSONObject();
+            userMessage.put("role", "user");
+            userMessage.put("content", userInput);
+            messages.put(userMessage);
+
+            try {
+                String response = sendMessageToGPT(messages);
+                System.out.println("🤖 챗봇: " + response);
+
+                // 챗봇 응답도 히스토리에 추가 (대화 유지)
+                JSONObject assistantMessage = new JSONObject();
+                assistantMessage.put("role", "assistant");
+                assistantMessage.put("content", response);
+                messages.put(assistantMessage);
+
+            } catch (IOException e) {
+                System.out.println("❌ 오류 발생: " + e.getMessage());
+            }
+        }
+
+        scanner.close();
+    }
+
+    // ChatGPT API 호출 함수
+    private static String sendMessageToGPT(JSONArray messages) throws IOException {
+        URL url = new URL(GPT_URL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Authorization", "Bearer " + API_KEY);
+        connection.setDoOutput(true);
+
+        JSONObject data = new JSONObject();
+        data.put("model", "gpt-4o
